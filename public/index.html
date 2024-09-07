@@ -4,8 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personal Budget</title>
+    <!-- This is an SEO Change -->
+    <link rel="canonical" href="index.html">
     <meta name="description" content="A free personal budger app">
     <meta name="keywords" content="app free budget finance">
+    <!-- This is an SEO Change -->
+    <meta name="author" content="Fabio Nolasco">
+    <!-- This is an SEO Change -->
+    <meta name="robots" content="index, archive"/>
     <link rel="stylesheet" href="reset.css">
     <link rel="stylesheet" href="main.css">
 </head>
@@ -15,13 +21,16 @@
 
     <nav>
         <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/about.html">About</a></li>
-            <li><a href="/login.html">Login</a></li>
+            <!-- This is an A11y Change -->
+            <li><a href="/" aria-label="Go to the Home Page">Home</a></li>
+            <!-- This is an A11y Change -->
+            <li><a href="/about.html" aria-label="Learn more about the app">About</a></li>
+            <!-- This is an A11y Change -->
+            <li><a href="/login.html" aria-label="Go to Login Page">Login</a></li>
             <li><a href="https://google.com">Google</a></li>
         </ul>
     </nav>
-
+    
     <div class="hero">
         <h1>Personal Budget</h1>
         <h2>A personal-budget management app</h2>
@@ -30,20 +39,21 @@
     <main class="center" id="main">
 
         <div class="page-area">
-
-            <article>
-                <h1>Stay on track</h1>
+            <!-- This is a Semantic HTML Change -->
+            <details>
+                <summary><strong>Stay on track</strong></summary>
                 <p>
                     Do you know where you are spending your money? If you really stop to track it down,
                     you would get surprised! Proper budget management depends on real data... and this
                     app will help you with that!
                 </p>
-            </article>
+            </details>
     
             <article>
                 <h1>Alerts</h1>
                 <p>
-                    What if your clothing budget ended? You will get an alert. The goal is to never go over the budget.
+                    <!-- This is a Semantic HTML Change -->
+                    What if your clothing budget ended? You will get an alert. The goal is to <em>never</em> go over the budget.
                 </p>
             </article>
     
@@ -59,14 +69,15 @@
             <article>
                 <h1>Free</h1>
                 <p>
-                    This app is free!!! And you are the only one holding your data!
+                    <!-- This is a Semantic HTML Change -->
+                    This app is <strong>free!!!</strong> And you are the only one holding your data!
                 </p>
             </article>
     
             <article>
                 <h1>Stay on track</h1>
                 <p>
-                    Do you know where you are spending your money? If you really stop to track it down,
+                    Do you know <em>where</em> you are spending your money? If you really stop to track it down,
                     you would get surprised! Proper budget management depends on real data... and this
                     app will help you with that!
                 </p>
