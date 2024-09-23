@@ -3,24 +3,34 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
+export interface BudgetItem {
+  title: string;
+  budget: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
-  private data: any = null;
+  private budgetData: BudgetItem[] = [
+    { title: "Eat out", budget: 25 },
+    { title: "Rent", budget: 275 },
+    { title: "Grocery", budget: 110 },
+    { title: "Utilities", budget: 100 },
+    { title: "Subscriptions", budget: 61 },
+    { title: "Travel", budget: 79 },
+    { title: "Mortgage", budget: 137 }
+  ];
 
   constructor(private http: HttpClient) {}
 
-  // Fetch data from the backend if data is null, otherwise return the cached data
-  getData(): Observable<any> {
-    if (this.data) {
-      // Return the cached data as an observable
-      return of(this.data);
+  getBudgetData(): Observable<BudgetItem[]> {
+    // Only make the HTTP call if the budgetData array is empty
+    if (this.budgetData.length === 0) {
+      return this.http.get<BudgetItem[]>('assets')
+        .pipe(tap(data => this.budgetData = data));
     } else {
-      // Call the backend and cache the result
-      return this.http.get<any>('your-backend-endpoint-url').pipe(
-        tap(response => this.data = response)
-      );
+      return of(this.budgetData);
     }
   }
 }

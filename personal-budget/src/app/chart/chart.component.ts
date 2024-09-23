@@ -1,65 +1,42 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
-//import { DataService } from './data.service';
-import { HttpClient } from '@angular/common/http';
+import { DataService, BudgetItem } from '../data.service';
 import { Chart } from 'chart.js/auto';
-import axios from 'axios';
 import * as d3 from 'd3';
-import { ChartItem, registerables } from 'chart.js/auto';
-
-interface BudgetItem {
-  title: string;
-  budget: number;
-}
 
 @Component({
   selector: 'pb-chart',
   templateUrl: './chart.component.html',
-  styleUrl: './chart.component.css'
+  styleUrls: ['./chart.component.css'] // Fix: changed styleUrl to styleUrls
 })
-
 export class ChartComponent implements OnInit {
 
   @ViewChild('myChart', { static: true }) chartElement!: ElementRef;
   @ViewChild('d3Chart', { static: true }) d3ChartElement!: ElementRef;
 
-  dataSource = {
-    datasets: [
-      {
-        data: [] as number[], 
-        backgroundColor: [
-          '#ffcd56', '#ff6384', '#36a2eb', '#fd6b19',
-          '#84DCCF', '#3A1772', '#EFC7E5', '#CFEE9E', '#B97375'
-        ]
-      }
-    ],
-    labels: [] as string[]
+  dataSource: { datasets: any[]; labels: string[] } = {
+    datasets: [],
+    labels: []
   };
 
-  constructor(private http: HttpClient){}
+  constructor(private dataService: DataService) {}
 
   ngOnInit(): void {
-    this.getBudget();
-    //this.createChart();
-    this.createD3Chart();   
+    this.dataService.getBudgetData().subscribe(data => {
+      this.dataSource = {
+        datasets: [{
+          data: data.map(item => item.budget),
+          backgroundColor: [
+            '#ffcd56', '#ff6384', '#36a2eb', '#fd6b19',
+            '#84DCCF', '#3A1772', '#EFC7E5', '#CFEE9E', '#B97375'
+          ]
+        }],
+        labels: data.map(item => item.title)
+      };
+
+      this.createChart();
+      this.createD3Chart(data); // Pass data to createD3Chart
+    });
   }
-
-  getBudget(): void {
-    this.http.get<{ myBudget: BudgetItem[] }>('assets/budget.json')
-    .subscribe(
-      (res) => {
-        console.log(res); // Check the output
-        if (res.myBudget) {
-          this.dataSource.datasets[0].data = res.myBudget.map(item => item.budget);
-          this.dataSource.labels = res.myBudget.map(item => item.title);
-          this.createChart(); // Call createChart after data is loaded
-        }
-      },
-      (error) => {
-        console.error('Error fetching budget data', error);
-      }
-    );
-}
-
 
   createChart(): void {
     const ctx = this.chartElement.nativeElement.getContext('2d');
@@ -73,8 +50,7 @@ export class ChartComponent implements OnInit {
     });
   }
 
-  
-  createD3Chart(): void {
+  createD3Chart(data: BudgetItem[]): void { // Accept data as a parameter
     const svg = d3.select(this.d3ChartElement.nativeElement)
       .attr('width', 400)
       .attr('height', 400);
@@ -83,24 +59,12 @@ export class ChartComponent implements OnInit {
     const g = svg.append('g')
       .attr('transform', 'translate(' + radius + ',' + radius + ')');
 
-    const pie = d3.pie<any>().value((d: any) => d.budget);
-    const arc = d3.arc<d3.PieArcDatum<any>>().outerRadius(radius - 10).innerRadius(0);
-
+    const pie = d3.pie<BudgetItem>().value((d: BudgetItem) => d.budget);
+    const arc = d3.arc<d3.PieArcDatum<BudgetItem>>().outerRadius(radius - 10).innerRadius(0);
     const color = d3.scaleOrdinal(d3.schemeCategory10);
-    
-    // Static data for D3 chart
-    const data = [
-      { title: 'Eat out', budget: 25 },
-      { title: 'Rent', budget: 275 },
-      { title: 'Grocery', budget: 110 },
-      { title: 'Utilities', budget: 100 },
-      { title: 'Subscriptions', budget: 61 },
-      { title: 'Travel', budget: 79 },
-      { title: 'Mortgage', budget: 137 }
-    ];
 
     const arcs = g.selectAll('.arc')
-      .data(pie(data))
+      .data(pie(data)) // Use the data parameter
       .enter().append('g')
       .attr('class', 'arc');
 
@@ -114,7 +78,4 @@ export class ChartComponent implements OnInit {
       .style('text-anchor', 'middle')
       .text((d: any) => d.data.title);
   }
-  
-
-//end of class
-} 
+}
